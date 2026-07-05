@@ -2,7 +2,7 @@
 
 A server monitoring and log analysis dashboard — simulates a small fleet of servers, ingests metrics and logs, evaluates health against configurable thresholds, and surfaces it all in a live-updating dashboard.
 
-**Live demo:** _add your deployed URL here once deployed_
+**Live demo:** https://opspulse-ebon.vercel.app/
 
 ## Why I built this
 
