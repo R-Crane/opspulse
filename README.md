@@ -75,3 +75,4 @@ npm test
 - Persist metrics to Postgres instead of SQLite for concurrent write scalability
 - Add integration tests hitting the actual Express routes, not just the threshold logic unit tests
 - Alert history / acknowledgment workflow (currently status is always "live," with no record of past incidents)
+
