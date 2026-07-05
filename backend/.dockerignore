@@ -1,0 +1,5 @@
+node_modules
+opspulse.db
+opspulse.db-wal
+opspulse.db-shm
+.env

@@ -1,0 +1,7 @@
+node_modules
+dist
+.env
+.DS_Store
+backend/opspulse.db
+backend/opspulse.db-wal
+backend/opspulse.db-shm
