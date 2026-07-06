@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import NavBar from '../components/NavBar'
 import MetricChart from '../components/MetricChart'
 import { StatusBadge } from '../components/Badges'
+import VendorIcon from '../components/VendorIcon'
 import { fetchServers, fetchServerMetrics } from '../lib/api'
 
 export default function ServerDetail() {
@@ -12,12 +13,12 @@ export default function ServerDetail() {
 
   useEffect(() => {
     load()
-    const interval = setInterval(load, 5000)
+    const interval = setInterval(load, 15000)
     return () => clearInterval(interval)
   }, [id])
 
   async function load() {
-    const [servers, metrics] = await Promise.all([fetchServers(), fetchServerMetrics(id, 30)])
+    const [servers, metrics] = await Promise.all([fetchServers(), fetchServerMetrics(id, 180)])
     setServer(servers.find((s) => s.id === id) || null)
     setHistory(metrics)
   }
@@ -31,6 +32,8 @@ export default function ServerDetail() {
     )
   }
 
+  const m = server.latestMetric
+
   return (
     <div className="min-h-screen">
       <NavBar />
@@ -39,26 +42,47 @@ export default function ServerDetail() {
           ← Back to dashboard
         </Link>
 
-        <div className="flex items-center justify-between mt-4 mb-8">
-          <div>
-            <h1 className="font-display text-2xl font-semibold">{server.name}</h1>
-            <p className="text-sm text-slate-500 capitalize">{server.role}</p>
+        <div className="flex items-center justify-between mt-4 mb-2 gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <VendorIcon vendor={server.vendor} />
+            <div className="min-w-0">
+              <h1 className="font-display text-2xl font-semibold truncate">{server.name}</h1>
+              <p className="text-sm text-slate-500 capitalize truncate">{server.role}</p>
+            </div>
           </div>
           <StatusBadge status={server.status} />
         </div>
 
+        {m && (
+          <div className="mb-8">
+            <p className="text-slate-300 text-sm">{m.message}</p>
+            <p className="text-xs text-slate-500 mt-1">
+              Last checked {new Date(m.timestamp).toLocaleTimeString()} ·{' '}
+              {m.responseTimeMs != null ? `${m.responseTimeMs}ms response time` : 'no response time recorded'}
+            </p>
+          </div>
+        )}
+
         <div className="grid gap-4">
-          <MetricChart data={history} metricKey="cpu" label="CPU usage (%)" />
-          <MetricChart data={history} metricKey="memory" label="Memory usage (%)" />
-          <MetricChart data={history} metricKey="disk" label="Disk usage (%)" />
+          <MetricChart data={history} metricKey="responseTimeMs" label="Response time (ms)" />
         </div>
 
-        <Link
-          to={`/logs?server=${server.id}`}
-          className="inline-block mt-6 text-sm text-accent hover:underline"
-        >
-          View logs for this server →
-        </Link>
+        <div className="flex flex-wrap gap-4 mt-6">
+          <a
+            href={server.statusPageUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="text-sm text-accent hover:underline"
+          >
+            Official status page →
+          </a>
+          <Link
+            to={`/logs?server=${server.id}`}
+            className="text-sm text-accent hover:underline"
+          >
+            View status history for this service →
+          </Link>
+        </div>
       </main>
     </div>
   )

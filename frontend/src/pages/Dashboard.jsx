@@ -10,7 +10,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     load()
-    const interval = setInterval(load, 5000) // matches backend tick rate
+    const interval = setInterval(load, 15000)
     return () => clearInterval(interval)
   }, [])
 
@@ -30,15 +30,17 @@ export default function Dashboard() {
       acc[s.status] = (acc[s.status] || 0) + 1
       return acc
     },
-    { healthy: 0, warning: 0, critical: 0 }
+    { operational: 0, degraded: 0, outage: 0 }
   )
 
   return (
     <div className="min-h-screen">
       <NavBar />
       <main className="max-w-6xl mx-auto px-6 py-10">
-        <h1 className="font-display text-2xl font-semibold mb-1">Fleet overview</h1>
-        <p className="text-slate-500 text-sm mb-8">Live status across {servers.length} servers · updates every 5s</p>
+        <h1 className="font-display text-2xl font-semibold mb-1">Live service status</h1>
+        <p className="text-slate-500 text-sm mb-8">
+          Real status pulled from {servers.length} public providers · refreshes every 15s
+        </p>
 
         {error && (
           <p className="text-critical text-sm mb-6">
@@ -48,21 +50,21 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10">
           <div className="border border-border rounded-lg p-5 bg-panel/60">
-            <p className="text-3xl font-display font-semibold text-healthy">{counts.healthy}</p>
-            <p className="text-sm text-slate-400 mt-1">Healthy</p>
+            <p className="text-3xl font-display font-semibold text-healthy">{counts.operational}</p>
+            <p className="text-sm text-slate-400 mt-1">Operational</p>
           </div>
           <div className="border border-border rounded-lg p-5 bg-panel/60">
-            <p className="text-3xl font-display font-semibold text-warning">{counts.warning}</p>
-            <p className="text-sm text-slate-400 mt-1">Warning</p>
+            <p className="text-3xl font-display font-semibold text-warning">{counts.degraded}</p>
+            <p className="text-sm text-slate-400 mt-1">Degraded</p>
           </div>
           <div className="border border-border rounded-lg p-5 bg-panel/60">
-            <p className="text-3xl font-display font-semibold text-critical">{counts.critical}</p>
-            <p className="text-sm text-slate-400 mt-1">Critical</p>
+            <p className="text-3xl font-display font-semibold text-critical">{counts.outage}</p>
+            <p className="text-sm text-slate-400 mt-1">Outage</p>
           </div>
         </div>
 
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display text-lg font-semibold">Servers</h2>
+          <h2 className="font-display text-lg font-semibold">Services</h2>
           <p className="text-xs text-slate-500">
             Last hour: <span className="text-slate-300">{summary.info} info</span> ·{' '}
             <span className="text-warning">{summary.warn} warn</span> ·{' '}
